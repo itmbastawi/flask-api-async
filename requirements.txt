@@ -1,0 +1,9 @@
+# requirements.txt
+flask[async]
+flask-sqlalchemy
+flask-migrate
+flask-jwt-extended
+flask-marshmallow
+marshmallow-sqlalchemy
+asyncpg
+python-dotenv
