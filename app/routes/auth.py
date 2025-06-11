@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from ..schemas.user import UserSchema, UserLoginSchema
 from ..services.auth import AuthService
 from marshmallow import ValidationError
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 
 auth_bp = Blueprint('auth', __name__)
 user_schema = UserSchema()
@@ -65,3 +66,19 @@ async def login():
             'message': 'Validation error',
             'errors': err.messages
         }), 400
+    
+
+
+@auth_bp.route('/protected', methods=['GET'])
+@jwt_required()
+async def protected():
+    current_user_id = get_jwt_identity()
+    return jsonify(logged_in_as=current_user_id), 200
+
+
+@auth_bp.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    current_user = get_jwt_identity()
+    new_access_token = create_access_token(identity=str(current_user))
+    return jsonify(access_token=new_access_token)
